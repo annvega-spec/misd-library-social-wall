@@ -1,19 +1,74 @@
 [
-  { "username": "librariangarza", "label": "Librarian Garza" },
-  { "username": "garza.library", "label": "Garza Library" },
-  { "username": "jacksonjaguarlibrary", "label": "Jackson Jaguar Library" },
-  { "username": "mcauliffechallengers", "label": "McAuliffe Challengers" },
-  { "username": "bookladyramirez", "label": "Book Lady Ramirez" },
-  { "username": "rayb.urnlibrary", "label": "Rayburn Library" },
-  { "username": "seguin.library", "label": "Seguin Library" },
-  { "username": "celestegarzalopez", "label": "Celeste Garza Lopez" },
-  { "username": "dmslibrarylions", "label": "DMS Library Lions" },
-  { "username": "fossummsreads", "label": "Fossum MS Reads" },
-  { "username": "stallionslibrary", "label": "Stallions Library" },
-  { "username": "mchi_library", "label": "Morris MS Library" },
-  { "username": "tastetest_tuesday", "label": "Taste Test Tuesday" },
-  { "username": "mcmemlibrary", "label": "Memorial Library" },
-  { "username": "rowehslibrary", "label": "Rowe HS Library" },
-  { "username": "lamar_academy", "label": "Lamar Academy" },
-  { "username": "aechsjaguarlibrary", "label": "AECHS Jaguar Library" }
+  {
+    "username": "annvega",
+    "label": "Ann Vega"
+  },
+  {
+    "username": "librariangarza",
+    "label": "Librarian Garza"
+  },
+  {
+    "username": "garza.library",
+    "label": "Garza Library"
+  },
+  {
+    "username": "jacksonjaguarlibrary",
+    "label": "Jackson Jaguar Library"
+  },
+  {
+    "username": "mcauliffechallengers",
+    "label": "McAuliffe Challengers"
+  },
+  {
+    "username": "bookladyramirez",
+    "label": "Book Lady Ramirez"
+  },
+  {
+    "username": "rayb.urnlibrary",
+    "label": "Rayburn Library"
+  },
+  {
+    "username": "seguin.library",
+    "label": "Seguin Library"
+  },
+  {
+    "username": "celestegarzalopez",
+    "label": "Celeste Garza Lopez"
+  },
+  {
+    "username": "dmslibrarylions",
+    "label": "DMS Library Lions"
+  },
+  {
+    "username": "fossummsreads",
+    "label": "Fossum MS Reads"
+  },
+  {
+    "username": "stallionslibrary",
+    "label": "Stallions Library"
+  },
+  {
+    "username": "mchi_library",
+    "label": "Morris MS Library"
+  },
+  {
+    "username": "tastetest_tuesday",
+    "label": "Taste Test Tuesday"
+  },
+  {
+    "username": "mcmemlibrary",
+    "label": "Memorial Library"
+  },
+  {
+    "username": "rowehslibrary",
+    "label": "Rowe HS Library"
+  },
+  {
+    "username": "lamar_academy",
+    "label": "Lamar Academy"
+  },
+  {
+    "username": "aechsjaguarlibrary",
+    "label": "AECHS Jaguar Library"
+  }
 ]
