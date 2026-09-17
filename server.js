@@ -12,7 +12,7 @@ const IG_ACCESS_TOKEN = process.env.IG_ACCESS_TOKEN || '';
 const BEHOLD_FEED_URL = process.env.BEHOLD_FEED_URL || '';
 const GRAPH_VERSION = 'v21.0';
 const MEDIA_LIMIT = 6;
-const CACHE_SECONDS = 600;
+const CACHE_SECONDS = 900; // 15 min server cache
 
 const accountsPath = path.join(__dirname, 'data', 'accounts.json');
 const accounts = JSON.parse(fs.readFileSync(accountsPath, 'utf8'));
@@ -112,22 +112,30 @@ async function fetchBusinessDiscovery(username, label) {
   return normalizeGraphMedia(bd.media, username, label);
 }
 
+let feedCache = null; // { expiresAt, data }
+let feedInflight = null;
+let lastGoodFeed = null;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function fetchLiveFeed() {
-  const results = await Promise.allSettled(
-    accounts.map((a) => fetchBusinessDiscovery(a.username, a.label))
-  );
+  // Sequential + small delay to avoid Meta (#4) application rate limits.
   const posts = [];
   const errors = [];
-  results.forEach((r, i) => {
-    const username = accounts[i].username;
-    if (r.status === 'fulfilled') {
-      posts.push(...r.value);
-    } else {
-      const msg = r.reason?.message || String(r.reason);
-      console.warn('[feed] skip', username, msg);
-      errors.push({ username, error: msg });
+  for (let i = 0; i < accounts.length; i++) {
+    const a = accounts[i];
+    try {
+      const items = await fetchBusinessDiscovery(a.username, a.label);
+      posts.push(...items);
+    } catch (err) {
+      const msg = err?.message || String(err);
+      console.warn('[feed] skip', a.username, msg);
+      errors.push({ username: a.username, error: msg });
     }
-  });
+    if (i < accounts.length - 1) await sleep(350);
+  }
   posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   return {
     source: 'instagram_graph',
@@ -137,6 +145,43 @@ async function fetchLiveFeed() {
     errors,
     posts,
   };
+}
+
+async function getCachedLiveFeed() {
+  const now = Date.now();
+  if (feedCache && feedCache.expiresAt > now) {
+    return feedCache.data;
+  }
+  if (feedInflight) return feedInflight;
+
+  feedInflight = (async () => {
+    try {
+      const feed = await fetchLiveFeed();
+      const rateLimited =
+        Array.isArray(feed.errors) &&
+        feed.errors.some((e) => /request limit reached/i.test(e.error || ''));
+
+      // If Meta rate-limits us and we got zero posts, keep serving the last good feed.
+      if (feed.posts.length === 0 && rateLimited && lastGoodFeed?.posts?.length) {
+        const stale = {
+          ...lastGoodFeed,
+          generated_at: new Date().toISOString(),
+          stale: true,
+          errors: feed.errors,
+        };
+        feedCache = { expiresAt: now + CACHE_SECONDS * 1000, data: stale };
+        return stale;
+      }
+
+      if (feed.posts.length > 0) lastGoodFeed = feed;
+      feedCache = { expiresAt: now + CACHE_SECONDS * 1000, data: feed };
+      return feed;
+    } finally {
+      feedInflight = null;
+    }
+  })();
+
+  return feedInflight;
 }
 
 function normalizeBeholdItem(item) {
@@ -188,7 +233,7 @@ app.get('/api/feed', async (_req, res) => {
   res.set('Cache-Control', `public, max-age=${CACHE_SECONDS}`);
   try {
     if (IG_USER_ID && IG_ACCESS_TOKEN) {
-      const feed = await fetchLiveFeed();
+      const feed = await getCachedLiveFeed();
       return res.json(feed);
     }
     if (BEHOLD_FEED_URL) {
