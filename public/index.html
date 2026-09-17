@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="McAllen ISD Libraries Instagram Social Wall" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>McAllen ISD Libraries — Social Wall</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#wall">Skip to posts</a>
+
+  <div class="app">
+    <header class="header">
+      <div class="header__brand">
+        <p class="header__eyebrow">McAllen ISD Libraries</p>
+        <h1 class="header__title">Social Wall</h1>
+        <div class="header__accent" aria-hidden="true"></div>
+      </div>
+      <div class="header__meta">
+        <p id="status" class="status" role="status" aria-live="polite">Loading…</p>
+        <p id="updated" class="updated" hidden></p>
+      </div>
+    </header>
+
+    <nav class="filters" aria-label="Filter by account">
+      <div class="filters__chips" id="chip-row" role="tablist">
+        <button type="button" class="chip chip--active" data-filter="all" role="tab" aria-selected="true">All</button>
+      </div>
+      <label class="filters__select-wrap" for="account-select">
+        <span class="visually-hidden">Filter by account</span>
+        <select id="account-select" class="filters__select">
+          <option value="all">All accounts</option>
+        </select>
+      </label>
+    </nav>
+
+    <main id="wall" class="wall" tabindex="-1">
+      <div id="loading" class="state state--loading" aria-busy="true">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Gathering library posts…</p>
+      </div>
+      <div id="error" class="state state--error" hidden>
+        <p class="state__title">Something went wrong</p>
+        <p id="error-msg" class="state__body"></p>
+        <button type="button" class="btn" id="retry-btn">Try again</button>
+      </div>
+      <div id="empty" class="state state--empty" hidden>
+        <p class="state__title">No posts yet</p>
+        <p class="state__body">Check back soon — our librarians are always sharing something new.</p>
+      </div>
+      <div id="grid" class="grid" hidden></div>
+    </main>
+
+    <footer class="footer">
+      <p>McAllen ISD Libraries · Black &amp; Gold</p>
+      <p id="demo-banner" class="demo-banner" hidden>Demo mode — connect Instagram Graph API for live posts</p>
+    </footer>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
