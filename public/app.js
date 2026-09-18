@@ -129,7 +129,6 @@ function setFilter(value) {
 
 function mediaHtml(post) {
   const type = (post.media_type || '').toUpperCase();
-  const src = post.media_url || post.thumbnail_url;
   const badge =
     type === 'VIDEO'
       ? '<span class="card__badge">Video</span>'
@@ -139,19 +138,41 @@ function mediaHtml(post) {
           ? '<span class="card__badge">Demo</span>'
           : '';
 
-  if (src) {
-    return `
-      <div class="card__media">
-        <img src="${escapeHtml(src)}" alt="" loading="lazy" decoding="async"
-             onerror="this.style.display='none'; this.nextElementSibling.hidden=false;" />
-        <div class="card__placeholder" style="background:${escapeHtml(post.placeholder_gradient || 'linear-gradient(135deg,#111,#d4af37)')}" hidden>
+  const placeholder = (hidden) => `
+        <div class="card__placeholder" style="background:${escapeHtml(post.placeholder_gradient || 'linear-gradient(135deg,#111,#d4af37)')}"${hidden ? ' hidden' : ''}>
           <svg class="card__placeholder-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="3" y="3" width="18" height="18" rx="5" stroke="#0a0a0a" stroke-width="1.5" opacity="0.7"/>
             <circle cx="12" cy="12" r="4" stroke="#0a0a0a" stroke-width="1.5" opacity="0.7"/>
             <circle cx="17.5" cy="6.5" r="1.2" fill="#0a0a0a" opacity="0.7"/>
           </svg>
           <span class="card__placeholder-handle">@${escapeHtml(post.username)}</span>
-        </div>
+        </div>`;
+
+  // Videos: prefer playable <video>; never put an MP4 into <img>
+  if (type === 'VIDEO' && post.media_url) {
+    const poster = post.thumbnail_url || '';
+    return `
+      <div class="card__media card__media--video">
+        <video controls playsinline preload="metadata" poster="${escapeHtml(poster)}"
+               src="${escapeHtml(post.media_url)}"
+               onerror="this.style.display='none'; this.nextElementSibling.hidden=false;"></video>
+        ${placeholder(true)}
+        ${badge}
+      </div>`;
+  }
+
+  // Image / album / video-without-mp4: use image URL, preferring still for videos
+  const src =
+    type === 'VIDEO'
+      ? post.thumbnail_url || post.media_url
+      : post.media_url || post.thumbnail_url;
+
+  if (src) {
+    return `
+      <div class="card__media">
+        <img src="${escapeHtml(src)}" alt="" loading="lazy" decoding="async"
+             onerror="this.style.display='none'; this.nextElementSibling.hidden=false;" />
+        ${placeholder(true)}
         ${badge}
       </div>`;
   }
