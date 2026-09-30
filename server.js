@@ -251,6 +251,25 @@ app.get('/api/feed', async (_req, res) => {
   }
 });
 
+app.get('/oembed', (req, res) => {
+  const base = 'https://misd-library-social-wall.onrender.com';
+  const width = Math.min(Number(req.query.maxwidth) || 1200, 1600);
+  const height = Math.min(Number(req.query.maxheight) || 900, 1600);
+  res.json({
+    version: '1.0',
+    type: 'rich',
+    provider_name: 'McAllen ISD Libraries',
+    provider_url: base + '/',
+    title: 'McAllen ISD Library Social Wall',
+    width,
+    height,
+    thumbnail_url: base + '/og-image.png',
+    thumbnail_width: 1200,
+    thumbnail_height: 630,
+    html: `<iframe src="${base}/" title="McAllen ISD Library Social Wall" width="${width}" height="${height}" style="border:0;background:#0a0a0a;" allowfullscreen></iframe>`,
+  });
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
